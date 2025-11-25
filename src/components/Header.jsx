@@ -1,134 +1,232 @@
-import React from "react";
-import { Box, Button, TextField, InputAdornment } from "@mui/material";
+import React, { useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Drawer from "@mui/material/Drawer";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import { useTheme } from "@mui/material/styles";
 
-export default function Header() {
+export default function Header({ links = [] }) {
   const location = useLocation();
-
-  const navItems = [
-    { label: "D" },
-    { label: "HOME", path: "/" },
-    { label: "EVENTS", path: "/events" },
-    { label: "YEC", path: "#" },
-    { label: "ABOUT", path: "#" },
-  ];
+  const theme = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <Box
-      component="header"
+    <AppBar
+      position="static"
+      elevation={2}
       sx={{
-        background: "linear-gradient(135deg, #0a1628 0%, #0d1f59 50%, #1a2b4a 100%)",
-        py: 1.5,
-        px: { xs: 2, sm: 3 },
-        boxShadow: "0 2px 12px rgba(0, 0, 0, 0.3)",
+        bgcolor: "primary.main",
+        py: 1,
       }}
     >
-      <Box
+      <Container maxWidth="lg" sx={{ px: { xs: 1.5, sm: 2 } }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            minHeight: "auto",
+            gap: 2,
+          }}
+        >
+          {/* Left group: logo + nav (keeps nav close to logo) */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              component={RouterLink}
+              to="/"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.2,
+                textDecoration: "none",
+                transition: "all 0.25s ease",
+                color: "inherit",
+                "&:hover": { transform: "translateY(-1px)" },
+              }}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: "secondary.main",
+                  color: "primary.main",
+                  width: 42,
+                  height: 42,
+                  fontWeight: 900,
+                  fontSize: "1.15rem",
+                  boxShadow: (theme) =>
+                    `0 2px 8px ${theme.palette.secondary.main}40`,
+                }}
+              >
+                D
+              </Avatar>
+              <Box sx={{ lineHeight: 1 }}>
+                <Typography
+                  sx={{ fontSize: "1.15rem", fontWeight: 800, color: "white" }}
+                >
+                  DEMA
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.65rem",
+                    color: "rgba(255,255,255,0.85)",
+                    fontWeight: 600,
+                  }}
+                >
+                  Digital Enterprises Management Association
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Nav Links - directly to the right of logo */}
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 3,
+                ml: 1.5,
+                alignItems: "center",
+              }}
+            >
+              {links.map((l) => {
+                const isActive = location.pathname === l.href;
+                return (
+                  <Button
+                    key={l.label}
+                    component={RouterLink}
+                    to={l.href}
+                    disableRipple
+                    sx={{
+                      color: "white",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                      textTransform: "none",
+                      px: 0,
+                      py: 0.5,
+                      transition: "color 0.18s ease",
+                      position: "relative",
+                      "&:hover": {
+                        color: "white",
+                        backgroundColor: "transparent",
+                      },
+                      // underline effect
+                      "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        left: 0,
+                        bottom: -6,
+                        height: 3,
+                        width: isActive ? "100%" : "0%",
+                        bgcolor: "secondary.main",
+                        borderRadius: 2,
+                        transition: "width 220ms cubic-bezier(.2,.9,.2,1)",
+                      },
+                      "&:hover::after": {
+                        width: "100%",
+                      },
+                    }}
+                  >
+                    {l.label}
+                  </Button>
+                );
+              })}
+            </Box>
+          </Box>
+
+          {/* spacer to push any right-side items (if added later) to the far right */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Mobile Menu Button */}
+          <IconButton
+            onClick={() => setMobileMenuOpen(true)}
+            sx={{
+              display: { xs: "flex", md: "none" },
+              color: "white",
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </Container>
+
+      {/* Mobile Drawer Menu */}
+      <Drawer
+        anchor="right"
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
         sx={{
-          maxWidth: 1200,
-          mx: "auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-          flexWrap: "wrap",
+          "& .MuiDrawer-paper": {
+            bgcolor: "primary.main",
+            color: "white",
+            width: 250,
+          },
         }}
       >
-        {/* Navigation Links */}
         <Box
           sx={{
             display: "flex",
-            gap: { xs: 1, sm: 2 },
+            justifyContent: "space-between",
             alignItems: "center",
-            flexWrap: "wrap",
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "rgba(255,255,255,0.1)",
           }}
         >
-          {navItems.map((item, index) => (
-            <Button
-              key={index}
-              component={item.path !== "#" ? RouterLink : "button"}
-              to={item.path !== "#" ? item.path : undefined}
-              sx={{
-                color: "#ffffff",
-                fontWeight: 550,
-                fontSize: { xs: "0.75rem", sm: "0.85rem" },
-                textTransform: "uppercase",
-                minWidth: "auto",
-                px: { xs: 1, sm: 1.5 },
-                py: 0.5,
-                bgcolor:
-                  location.pathname === item.path && item.path !== "#"
-                    ? "rgba(0,0,0,0.1)"
-                    : "transparent",
-                "&:hover": {
-                  bgcolor: "rgba(0,0,0,0.15)",
-                },
-              }}
-            >
-              {item.label}
-            </Button>
-          ))}
-        </Box>
-
-        {/* Search and Login */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          {/* Search Bar */}
-          <TextField
-            placeholder="Search"
-            size="small"
-            sx={{
-              width: { xs: 120, sm: 160 },
-              bgcolor: "rgba(255, 255, 255, 0.2)",
-              borderRadius: 1,
-              "& .MuiOutlinedInput-root": {
-                height: "32px",
-                "& fieldset": {
-                  borderColor: "rgba(255, 255, 255, 0.3)",
-                },
-              },
-              "& input": {
-                padding: "6px 8px",
-                fontSize: "0.8rem",
-                color: "#fff",
-                "&::placeholder": {
-                  color: "rgba(255, 255, 255, 0.7)",
-                  opacity: 1,
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: "1rem", color: "rgba(255, 255, 255, 0.7)" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          {/* Login Button */}
-          <Button
-            sx={{
-              background: "linear-gradient(135deg, #d4af37 0%, #c9a961 100%)",
-              color: "#0d1f59",
-              fontWeight: 700,
-              fontSize: { xs: "0.75rem", sm: "0.85rem" },
-              textTransform: "uppercase",
-              px: 2,
-              py: 0.5,
-              height: "32px",
-              minWidth: "auto",
-              boxShadow: "0 2px 8px rgba(212, 175, 55, 0.3)",
-              "&:hover": {
-                background: "linear-gradient(135deg, #e5c158 0%, #d4af37 100%)",
-                boxShadow: "0 4px 12px rgba(212, 175, 55, 0.5)",
-              },
-            }}
+          <Typography sx={{ fontWeight: 800, fontSize: "1.1rem" }}>
+            Menu
+          </Typography>
+          <IconButton
+            onClick={() => setMobileMenuOpen(false)}
+            sx={{ color: "white" }}
           >
-            Login
-          </Button>
-          </Box>
+            <CloseIcon />
+          </IconButton>
         </Box>
-      </Box>
+        <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1.5 }}>
+          {links.map((l) => {
+            const isActive = location.pathname === l.href;
+            return (
+              <Button
+                key={l.label}
+                component={RouterLink}
+                to={l.href}
+                onClick={() => setMobileMenuOpen(false)}
+                fullWidth
+                sx={{
+                  textAlign: "left",
+                  justifyContent: "flex-start",
+                  color: isActive ? "secondary.main" : "white",
+                  fontWeight: 700,
+                  fontSize: "1rem",
+                  textTransform: "none",
+                  p: 1.5,
+                  borderRadius: 1,
+                  bgcolor: isActive ? "rgba(255,255,255,0.1)" : "transparent",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.15)",
+                    color: "secondary.main",
+                  },
+                }}
+              >
+                {l.label}
+              </Button>
+            );
+          })}
+        </Box>
+      </Drawer>
+    </AppBar>
   );
 }
